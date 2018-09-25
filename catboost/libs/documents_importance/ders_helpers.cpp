@@ -85,6 +85,9 @@ static TEvaluateDerivativesFunc GetEvaluateDerivativesFunc(ELossFunction lossFun
         case ELossFunction::Poisson:
             return EvaluateDerivativesForError<TPoissonError>;
             break;
+        case ELossFunction::ConstrainedRegression:
+            return EvaluateDerivativesForError<TConstrainedRegressionError>;
+	    break;
         default:
             CB_ENSURE(false, "provided error function is not supported yet");
     }

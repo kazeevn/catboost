@@ -85,7 +85,8 @@ void TCatboostOptions::SetLeavesEstimationDefault() {
             break;
         }
         case ELossFunction::Logloss:
-        case ELossFunction::CrossEntropy: {
+        case ELossFunction::CrossEntropy: 
+        case ELossFunction::ConstrainedRegression: {
             defaultNewtonIterations = 10;
             defaultGradientIterations = 40;
             defaultEstimationMethod = ELeavesEstimation::Newton;

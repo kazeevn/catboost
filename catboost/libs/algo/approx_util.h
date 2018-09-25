@@ -55,7 +55,8 @@ inline bool IsStoreExpApprox(ELossFunction lossFunction) {
         ELossFunction::PairLogit,
         ELossFunction::PairLogitPairwise,
         ELossFunction::YetiRank,
-        ELossFunction::YetiRankPairwise
+        ELossFunction::YetiRankPairwise,
+	ELossFunction::ConstrainedRegression
     );
 }
 

@@ -2309,6 +2309,7 @@ class CatBoostRegressor(CatBoost):
         'LogLinQuantile:alpha=value'
         'Poisson'
         'MAPE'
+        'ConstrainedRegression'
     """
     def __init__(
         self,
@@ -2576,7 +2577,7 @@ class CatBoostRegressor(CatBoost):
 
     def _check_is_regressor_loss(self, loss_function):
         if self._is_classification_loss(loss_function):
-            raise CatboostError("Invalid loss_function={}: for Regressor use RMSE, MAE, Quantile, LogLinQuantile, Poisson, MAPE, R2.".format(loss_function))
+            raise CatboostError("Invalid loss_function={}: for Regressor use RMSE, MAE, Quantile, LogLinQuantile, Poisson, MAPE, R2, ConstrainedRegression.".format(loss_function))
 
 
 def train(pool=None, params=None, dtrain=None, logging_level=None, verbose=None, iterations=None,

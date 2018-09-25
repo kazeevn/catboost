@@ -156,7 +156,8 @@ void BindModelFileParams(NLastGetopt::TOpts* parser, TString* modelFileName, EMo
 static TVector<TString> GetAllObjectives() {
     return {"Logloss", "CrossEntropy", "RMSE", "MAE", "Quantile", "LogLinQuantile", "MAPE", "Poisson",
             "MultiClass", "MultiClassOneVsAll", "PairLogit", "PairLogitPairwise", "YetiRank",
-            "YetiRankPairwise", "QueryRMSE", "QuerySoftMax", "QueryCrossEntropy"};
+            "YetiRankPairwise", "QueryRMSE", "QuerySoftMax", "QueryCrossEntropy", 
+	    "ConstrainedRegression"};
 }
 
 static TVector<TString> GetAllMetrics() {
@@ -166,7 +167,7 @@ static TVector<TString> GetAllMetrics() {
             "AUC", "Accuracy", "Precision", "Recall", "F1", "TotalF1", "MCC", "PairAccuracy", "AverageGain", "QueryAverage",
             "PFound", "NDCG", "BalancedAccuracy", "BalancedErrorRate", "Kappa", "WKappa", "BrierScore",
             "MSLE", "MedianAbsoluteError", "ZeroOneLoss", "HammingLoss", "HingeLoss", "SMAPE",
-            "PrecisionAt", "RecallAt", "MAP", "LogLikelihoodOfPrediction"};
+            "PrecisionAt", "RecallAt", "MAP", "LogLikelihoodOfPrediction", "ConstrainedRegression"};
 }
 
 void ParseCommandLine(int argc, const char* argv[],

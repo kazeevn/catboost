@@ -211,6 +211,55 @@ public:
     ) const;
 };
 
+class TConstrainedRegressionError : public IDerCalcer<TConstrainedRegressionError, /*StoreExpApproxParam*/ true> {
+public:
+    explicit TConstrainedRegressionError(bool storeExpApprox) {
+        CB_ENSURE(storeExpApprox == StoreExpApprox, "Approx format does not match");
+    }
+
+    // L = (t - e^x/(1 + e^x))^2
+    // dL/dX = -(2 e^x (t e^x + t - e^x))\/(e^x + 1)^3
+    double CalcDer(double approxExp, float target) const {
+	const double a_plus_one = approxExp + 1.;
+        return 2.*approxExp*((target-1.)*approxExp + target)/(a_plus_one*a_plus_one*a_plus_one);
+    }
+
+
+    // (2 e^x ((t - 1) e^(2 x) - t + 2 e^x))\/(e^x + 1)^4
+    double CalcDer2(double approxExp, float target) const {
+	const double a_plus_one = approxExp + 1.;
+	const double a_plus_one_squared = a_plus_one * a_plus_one;
+	return -2*approxExp*((target - 1.)*approxExp*approxExp - target + 2*approxExp) / \
+	    (a_plus_one_squared*a_plus_one_squared);
+    }
+
+    // (2 e^x (e^x (-e^x ((t - 1) e^x - 3 t + 7) + 3 t + 4) - t))\/(e^x + 1)^5
+    double CalcDer3(double approxExp, float target) const {
+	const double a_plus_one = approxExp + 1.;
+	const double a_plus_one_squared = a_plus_one * a_plus_one;
+	return -2*approxExp*(approxExp*(-approxExp*((target - 1.)*approxExp - 3*target + 7.) +
+				       3*target + 4.) - target) / \
+	    (a_plus_one_squared*a_plus_one_squared*a_plus_one);
+    }
+
+    template<bool CalcThirdDer>
+    void CalcDers(double approxExp, float target, TDers* ders) const {
+	const double a_plus_one = approxExp + 1.;
+	const double a_plus_one_squared = a_plus_one * a_plus_one;
+	const double a_plus_one_4th = a_plus_one_squared*a_plus_one_squared;
+        ders->Der1 = \
+	    2.*approxExp*((target-1.)*approxExp + target)/(a_plus_one*a_plus_one*a_plus_one);
+        ders->Der2 = -2*approxExp*((target - 1.)*approxExp*approxExp - target + 2*approxExp) / \
+	    (a_plus_one_4th);
+        if (CalcThirdDer) {
+            ders->Der3 = \
+		-2*approxExp*(approxExp*(-approxExp*((target - 1.)*approxExp - 3*target + 7.) +
+					3*target + 4.) - target) /	\
+		(a_plus_one_4th*a_plus_one);
+        }
+    }
+};
+
 class TRMSEError : public IDerCalcer<TRMSEError, /*StoreExpApproxParam*/ false> {
 public:
     static constexpr double RMSE_DER2 = -1.0;

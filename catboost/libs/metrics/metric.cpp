@@ -165,6 +165,68 @@ void TCrossEntropyMetric::GetBestValue(EMetricBestValue* valueType, float*) cons
     *valueType = EMetricBestValue::Min;
 }
 
+
+/* ConstrainedRegression */
+
+TConstrainedRegressionMetric::TConstrainedRegressionMetric(ELossFunction lossFunction, double border)
+        : LossFunction(lossFunction)
+        , Border(border)
+{
+    Y_ASSERT(lossFunction == ELossFunction::ConstrainedRegression);
+    if (lossFunction == ELossFunction::ConstrainedRegression) {
+        CB_ENSURE(border == GetDefaultClassificationBorder(),
+		  "Border is meaningless for constrainedRegression metric");
+    }
+}
+
+TMetricHolder TConstrainedRegressionMetric::EvalSingleThread(
+    const TVector<TVector<double>>& approx,
+    const TVector<float>& target,
+    const TVector<float>& weight,
+    const TVector<TQueryInfo>& /*queriesInfo*/,
+    int begin,
+    int end
+) const {
+    // (t - exp(f)/(1+exp(f)))^2
+
+    CB_ENSURE(approx.size() == 1, "Constrained regression supports only single-dimensional data");
+    const auto& approxVec = approx.front();
+    Y_ASSERT(approxVec.size() == target.size());
+
+    TMetricHolder holder(2);
+    const double* approxPtr = approxVec.data();
+    const float* targetPtr = target.data();
+    for (int i = begin; i < end; ++i) {
+        float w = weight.empty() ? 1 : weight[i];
+	// TODO(kazeevn) make prim and proper
+	const double high_limit = 20;
+	const double low_limit = -20;
+	double prediction;
+	if (approxPtr[i] > high_limit) {
+	    prediction = 1.;
+	} else if (approxPtr[i] < low_limit) {
+	    prediction = 0.;
+	} else {
+	    prediction = 1. / (1. + exp(-approxPtr[i]));
+	}
+	const double raw_error = targetPtr[i] - prediction;
+        holder.Stats[0] += w * raw_error*raw_error;
+        holder.Stats[1] += w;
+    }
+    return holder;
+}
+
+TString TConstrainedRegressionMetric::GetDescription() const {
+    return BuildDescription(LossFunction, UseWeights, "%.3g", MakeBorderParam(Border));
+
+}
+
+void TConstrainedRegressionMetric::GetBestValue(EMetricBestValue* valueType, float* bestValue) const {
+    *valueType = EMetricBestValue::FixedValue;
+    *bestValue = 0.;
+}
+
+
 /* CtrFactor */
 
 TMetricHolder TCtrFactorMetric::EvalSingleThread(
@@ -2452,6 +2514,9 @@ static TVector<THolder<IMetric>> CreateMetric(ELossFunction metric, TMap<TString
             validParams = {"alpha"};
             break;
         }
+        case ELossFunction::ConstrainedRegression:
+            result.emplace_back(new TConstrainedRegressionMetric(ELossFunction::ConstrainedRegression));
+            break;
         default:
             CB_ENSURE(false, "Unsupported loss_function: " << metric);
             return TVector<THolder<IMetric>>();

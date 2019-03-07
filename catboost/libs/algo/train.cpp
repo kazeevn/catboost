@@ -17,6 +17,7 @@ class TUserDefinedPerObjectError;
 class TUserDefinedQuerywiseError;
 class TLqError;
 class TConstrainedRegressionError;
+class THonestLikelihoodError;
 
 TErrorTracker BuildErrorTracker(EMetricBestValue bestValueType, double bestPossibleValue, bool hasTest, TLearnContext* ctx) {
     const auto& odOptions = ctx->Params.BoostingOptions->OverfittingDetector;
@@ -77,6 +78,9 @@ TTrainOneIterationFunc GetOneIterationFunc(ELossFunction lossFunction) {
             break;
         case ELossFunction::ConstrainedRegression:
             return TrainOneIter<TConstrainedRegressionError>;
+            break;
+        case ELossFunction::HonestLikelihood:
+	    return TrainOneIter<THonestLikelihoodError>;
             break;
         case ELossFunction::Custom:
             return TrainOneIter<TCustomError>;

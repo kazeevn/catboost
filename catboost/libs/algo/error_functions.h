@@ -260,6 +260,68 @@ public:
     }
 };
 
+class THonestLikelihoodError : public IDerCalcer<THonestLikelihoodError, /*StoreExpApproxParam*/ true> {
+public:
+    explicit THonestLikelihoodError(bool storeExpApprox) {
+        CB_ENSURE(storeExpApprox == StoreExpApprox, "Approx format does not match");
+    }
+
+    // L = -log(t * sigmoid(predictions) + (1 - t) * sigmoid(-predictions))
+    double CalcDer(double approxExp, float target) const {
+	const double rp = approxExp/(1. + approxExp);
+	const double rnp = 1./(1. + approxExp);
+	const double rp_grad = rp*rnp;
+	return -rp_grad*(2*target - 1) / (target*rp + (1 - target)*rnp);
+    }
+
+    double CalcDer2(double approxExp, float target) const {
+	const double rp = approxExp/(1. + approxExp);
+	const double rnp = 1./(1. + approxExp);
+	const double rp_grad = rp*rnp;
+	const double A = rp_grad * (2 * target - 1);
+	const double B = target * rp + (1 - target) * rnp;
+	return A*A/(B*B) + rp_grad*(2*target - 1) * (rp - rnp)/B;
+    }
+
+    double CalcDer3(double approxExp, float target) const {
+	const double denomRoot3 = (approxExp + 1) * (target * approxExp - target + 1);
+	const double approxExp2 = approxExp*approxExp;
+	const double target2 = target*target;
+	return -(2*target - 1)*approxExp*(target2*approxExp2*approxExp2 -
+					  target*approxExp2*approxExp +
+					  6*target2*approxExp2 -
+					  6*target*approxExp2 +
+					  target*approxExp -
+					  approxExp +
+					  target2 -
+					  2*target + 1.) / pow(denomRoot3, 3);
+    }
+
+    template<bool CalcThirdDer>
+    void CalcDers(double approxExp, float target, TDers* ders) const {
+;	const double rp = approxExp/(1. + approxExp);
+	const double rnp = 1./(1. + approxExp);
+	const double rp_grad = rp*rnp;
+	const double A = rp_grad * (2 * target - 1);
+	const double B = target * rp + (1 - target) * rnp;
+	ders->Der1 = -A/B;
+	ders->Der2 = A*A/(B*B) + rp_grad*(2*target - 1) * (rp - rnp)/B;
+        if (CalcThirdDer) {
+	    const double target2 = target*target;
+	    const double approxExp2 = approxExp*approxExp;
+	    const double denomRoot3 = (approxExp + 1) * (target * approxExp - target + 1);
+	    ders->Der3 = -(2*target - 1)*approxExp*(target2*approxExp2*approxExp2 -
+	    					    target*approxExp2*approxExp +
+	    					    6*target2*approxExp2 -
+	    					    6*target*approxExp2 +
+	    					    target*approxExp -
+	    					    approxExp +
+	    					    target2 -
+	    					    2*target + 1.) / pow(denomRoot3, 3);
+        }
+    }
+};
+
 class TRMSEError : public IDerCalcer<TRMSEError, /*StoreExpApproxParam*/ false> {
 public:
     static constexpr double RMSE_DER2 = -1.0;

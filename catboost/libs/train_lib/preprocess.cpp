@@ -129,7 +129,7 @@ void CheckLearnConsistency(
     CheckTrainBaseline(lossDescription.GetLossFunction(), learnData.Baseline);
 
     TMinMax<float> weightBounds = CalcMinMax(learnData.Weights);
-    CB_ENSURE(weightBounds.Min >= 0, "Has negative weight: " + ToString(weightBounds.Min));
+    // CB_ENSURE(weightBounds.Min >= 0, "Has negative weight: " + ToString(weightBounds.Min));
     CB_ENSURE(weightBounds.Max > 0, "All weights are 0");
 
     if (IsPairwiseError(lossDescription.GetLossFunction())) {

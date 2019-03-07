@@ -65,6 +65,7 @@ TTargetClassifier BuildTargetClassifier(const TVector<float>& target,
         case ELossFunction::UserPerObjMetric:
         case ELossFunction::UserQuerywiseMetric:
         case ELossFunction::ConstrainedRegression:
+        case ELossFunction::HonestLikelihood:
             return TTargetClassifier(SelectBorders(
                 target,
                 targetBorderCount,

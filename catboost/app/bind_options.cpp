@@ -157,7 +157,7 @@ static TVector<TString> GetAllObjectives() {
     return {"Logloss", "CrossEntropy", "RMSE", "MAE", "Quantile", "LogLinQuantile", "MAPE", "Poisson",
             "MultiClass", "MultiClassOneVsAll", "PairLogit", "PairLogitPairwise", "YetiRank",
             "YetiRankPairwise", "QueryRMSE", "QuerySoftMax", "QueryCrossEntropy", 
-	    "ConstrainedRegression"};
+	    "ConstrainedRegression", "HonestLikelihood"};
 }
 
 static TVector<TString> GetAllMetrics() {
@@ -167,7 +167,8 @@ static TVector<TString> GetAllMetrics() {
             "AUC", "Accuracy", "Precision", "Recall", "F1", "TotalF1", "MCC", "PairAccuracy", "AverageGain", "QueryAverage",
             "PFound", "NDCG", "BalancedAccuracy", "BalancedErrorRate", "Kappa", "WKappa", "BrierScore",
             "MSLE", "MedianAbsoluteError", "ZeroOneLoss", "HammingLoss", "HingeLoss", "SMAPE",
-            "PrecisionAt", "RecallAt", "MAP", "LogLikelihoodOfPrediction", "ConstrainedRegression"};
+            "PrecisionAt", "RecallAt", "MAP", "LogLikelihoodOfPrediction", "ConstrainedRegression",
+	    "HonestLikelihood"};
 }
 
 void ParseCommandLine(int argc, const char* argv[],

@@ -42,6 +42,7 @@ SRCS(
     train_one_iter_user_querywise.cpp
     train_one_iter_lq.cpp
     train_one_iter_constrained_regression.cpp
+    train_one_iter_honest_likelihood.cpp
     tree_print.cpp
     yetirank_helpers.cpp
     pairwise_leaves_calculation.cpp

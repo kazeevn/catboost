@@ -99,6 +99,7 @@ enum class ELossFunction {
     MedianAbsoluteError,
     SMAPE,
     ConstrainedRegression,
+    HonestLikelihood,
 
     /* multiclassification errors */
 

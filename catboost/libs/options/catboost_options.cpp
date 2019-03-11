@@ -85,14 +85,17 @@ void TCatboostOptions::SetLeavesEstimationDefault() {
             break;
         }
         case ELossFunction::Logloss:
-        case ELossFunction::CrossEntropy: 
-        case ELossFunction::ConstrainedRegression:
-        case ELossFunction::HonestLikelihood: {
+        case ELossFunction::CrossEntropy: {
             defaultNewtonIterations = 10;
             defaultGradientIterations = 40;
             defaultEstimationMethod = ELeavesEstimation::Newton;
             break;
         }
+        case ELossFunction::ConstrainedRegression:
+        case ELossFunction::HonestLikelihood: {
+	    defaultGradientIterations = 40;
+            defaultEstimationMethod = ELeavesEstimation::Gradient;
+            break;
         case ELossFunction::YetiRank: {
             defaultL2Reg = 0;
             defaultEstimationMethod = (GetTaskType() == ETaskType::GPU) ? ELeavesEstimation::Newton : ELeavesEstimation::Gradient;
